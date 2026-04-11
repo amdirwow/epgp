@@ -86,7 +86,7 @@ function LootMaster:OnInitialize()
         hideOnSelection = true,
         loot_timeout = 60,
         filterEPGPLootmasterMessages = true,
-        monitor = false,
+        monitor = true,
         monitorSend = true,
         monitorSendAssistantOnly = false,
         monitorThreshold = 2,

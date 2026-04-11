@@ -1007,6 +1007,10 @@ function LootMasterML:RemoveLoot( link )
 	if not self.lootTable then return end;
 
     local loot = self:GetLoot(link);
+    if not loot then
+        return self:Debug(format('RemoveLoot: not found %s', tostring(link)))
+    end
+
     local itemID = loot.id;
 
     if not itemID or not self.lootTable[itemID] then
@@ -1682,7 +1686,7 @@ end
 
 --[[ Find out if we're using master looting and find out who it is ]]--
 function LootMasterML:GROUP_UPDATE()
-    lootmethod, mlPartyID, mlRaidID = GetLootMethod();
+    local lootmethod, mlPartyID, mlRaidID = GetLootMethod();
     if lootmethod ~= 'master' then
         self.current_ml = nil;
         return

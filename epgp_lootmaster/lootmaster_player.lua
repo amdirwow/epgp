@@ -231,7 +231,7 @@ function LootMaster:CommandReceived(prefix, message, distribution, sender)
         return self:Debug('!player or !link')
     end;
 
-    lootTypeID = tonumber(lootType) or LootMaster.LOOTTYPE.UNKNOWN;
+    local lootTypeID = tonumber(lootType) or LootMaster.LOOTTYPE.UNKNOWN;
     lootType = LootMaster.LOOTTYPE[lootTypeID] or LootMaster.LOOTTYPE[LootMaster.LOOTTYPE.UNKNOWN];
     lootGP = tonumber(lootGP) or -1;
 

@@ -224,7 +224,7 @@ function LootMaster:CreateLootSelectFrame()
               self:RemoveLoot( frame.data.id );
               self:UpdateLootUI();
     end)
-    btnPass:SetPoint("BOTTOMLEFT",btnGreed,"BOTTOMRIGHT",5,0)
+    btnPass:SetPoint("BOTTOMLEFT", icon, "BOTTOMRIGHT", 5, 0)
     btnPass:SetText("Пас")
     btnPass:SetHeight(25)
     btnPass:SetWidth(btnPass:GetFontString():GetStringWidth() + 20)
@@ -495,7 +495,7 @@ function LootMaster:UpdateLootUI()
                       self:RemoveLoot(lootFrame.data.id);
                       self:UpdateLootUI();
             end)
-            button:SetPoint("BOTTOMLEFT", btnOffspec, "BOTTOMRIGHT", 5, 0)
+            button:SetPoint("BOTTOMLEFT", lootFrame.itemIcon, "BOTTOMRIGHT", 5, 0)
             button:SetHeight(25)
             lootFrame.buttons[i] = button
           end
