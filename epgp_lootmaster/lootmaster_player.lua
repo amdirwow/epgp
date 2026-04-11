@@ -108,7 +108,7 @@ function LootMaster:CommandReceived(prefix, message, distribution, sender)
         numButtons = 2
         buttons = {
           {response = LootMaster.RESPONSE.NEED,           text = 'Мейнспек / Потрібно'},
-          {response = LootMaster.RESPONSE.GREED,          text = 'Оффспек / Жадібність'}
+          {response = LootMaster.RESPONSE.GREED,          text = 'Оффспек / Грід'}
         }
     end
 

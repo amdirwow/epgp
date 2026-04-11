@@ -68,7 +68,7 @@ function LootMaster:OnInitialize()
         button3_color     = 'ffc01b',
         button3_fallback  = 'OFFSPEC',
 
-        button4           = 'Жадібність',
+        button4           = 'Грід',
         button4_color     = 'c65b00',
         button4_fallback  = 'GREED',
 
@@ -110,7 +110,7 @@ function LootMaster:OnInitialize()
         { ["CODE"]      = "WAIT",           ["SORT"] =  300,  ["COLOR"] = {1,0.5,0},      ["TEXT"] = 'Триває вибір, зачекайте...' },
         { ["CODE"]      = "TIMEOUT",        ["SORT"] =  400,  ["COLOR"] = {1,0,1},        ["TEXT"] = 'Кандидат не відповів вчасно.' },
         { ["CODE"]      = "NEED",           ["SORT"] =  500,  ["COLOR"] = {0.5,1,0.5},    ["TEXT"] = 'Мейнспек' },
-        { ["CODE"]      = "GREED",          ["SORT"] =  800,  ["COLOR"] = {1,1,0},        ["TEXT"] = 'Жадібність / Альт' },
+        { ["CODE"]      = "GREED",          ["SORT"] =  800,  ["COLOR"] = {1,1,0},        ["TEXT"] = 'Грід / Альт' },
         { ["CODE"]      = "DISENCHANT",     ["SORT"] =  900,  ["COLOR"] = {0,0.8,1},      ["TEXT"] = '--розпилювач--' },
         { ["CODE"]      = "PASS",           ["SORT"] = 1000,  ["COLOR"] = {0.6,0.6,0.6},  ["TEXT"] = 'Пас' },
         { ["CODE"]      = "AUTOPASS",       ["SORT"] = 1100,  ["COLOR"] = {0.6,0.6,0.6},  ["TEXT"] = 'Автопас (персонаж не підходить)' },

@@ -46,7 +46,7 @@ RESPONSES = {
   { CODE = "NEED",           SORT = 5,    COLOR = {0.4,1,0.4},    TEXT = 'Мейнспек' },
   { CODE = "UPGRADE",        SORT = 6,    COLOR = {0.4,1,0.4},    TEXT = 'Малий апгрейд' },
   { CODE = "OFFSPEC",        SORT = 7,    COLOR = {0.4,1,0.4},    TEXT = 'Оффспек' },
-  { CODE = "GREED",          SORT = 8,    COLOR = {1,1,0},        TEXT = 'Жадібність / Альт' },
+  { CODE = "GREED",          SORT = 8,    COLOR = {1,1,0},        TEXT = 'Грід / Альт' },
   { CODE = "AUTOPASS",       SORT = 9,    COLOR = {0.6,0.6,0.6},  TEXT = 'Автопас' },
   { CODE = "PASS",           SORT = 10,   COLOR = {0.6,0.6,0.6},  TEXT = 'Пас' }
 }

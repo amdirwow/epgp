@@ -280,9 +280,9 @@ function mod:DisplayItemUserSelection(lootData)
     btn:SetPoint("BOTTOMLEFT", btnOffspec, "BOTTOMRIGHT", 1, 0)
     btn:SetHeight(25)
     btn:SetWidth(95)
-    btn:SetText("Жадібність / Альт")
+    btn:SetText("Грід / Альт")
     btn:SetScript("OnEnter", function()
-      mod:ShowInfoPopup("Жадібність / Альт / Roll", "Оберіть це, якщо предмет потрібен для третього спека "..
+      mod:ShowInfoPopup("Грід / Альт / Roll", "Оберіть це, якщо предмет потрібен для третього спека "..
                                     "або альта. За замовчуванням greed визначається через roll, "..
                                     "але MinEP усе ще враховується.")
     end)

@@ -27,7 +27,7 @@ do
     ['']          = 'Без fallback',
     NEED          = 'Мейнспек',
     OFFSPEC       = 'Оффспек',
-    GREED         = 'Жадібність',
+    GREED         = 'Не відмовлюсь',
     MINORUPGRADE  = 'Малий апгрейд'
   }
   
