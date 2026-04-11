@@ -1,0 +1,20 @@
+## Interface: 30300
+## Title: amdir EPGP LootMaster - |cFFFF8080ML|r
+## Author: Bushmaster-Twisting Nether-EU, amdir
+## Version: 1.0.0
+## Notes: amdir EPGP LootMaster ML. Discord: https://discord.gg/jvMBqzsHa6 | Site: https://amdir.in.ua/
+## X-Category: Guild
+## RequiredDeps: epgp_lootmaster
+## OptionalDeps: EPGP, CT_RaidTracker,CT RaidTracker 1.5 (modded by Eris)
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## X-Curse-Packaged-Version: 1.0.0
+## X-Website: https://amdir.in.ua/
+## X-Discord: https://discord.gg/jvMBqzsHa6
+## X-Curse-Project-Name: EPGPLootmaster
+## X-Curse-Project-ID: epgp_lootmaster
+## X-Curse-Repository-ID: wow/epgp_lootmaster/mainline
+lootmaster_ml.lua
+lootmaster_ml_ui.lua
+lootmaster_options_buttonwidget.lua
+lootmaster_options.lua
