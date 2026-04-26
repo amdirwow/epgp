@@ -20,20 +20,38 @@ local mathCachedRandomSeed  = math.random()*1000
 
 
 StaticPopupDialogs["EPGPLOOTMASTER_ASK_TRACKING"] = {
-	text = '- - - - amdir EPGP LootMaster - - - -\r\n\r\nВи майстер здобичі. Використати amdir EPGP LootMaster для розподілу луту?\r\n\r\n(Запит з\'явиться знову. Поведінку можна змінити через /lm config)',
+	text = '- - - - amdir EPGP LootMaster - - - -\r\n\r\nВи майстер здобичі. Використати amdir EPGP LootMaster для розподілу луту?\r\n\r\n(Запит з\'явиться знову. Поведінку можна змінити через /lm config)\r\n\r\n ',
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
+		LootMasterML.suppressTrackingPopupUntilReload = false
 		LootMasterML:EnableTracking()
         LootMaster:Print('Відстеження луту для цього рейду увімкнено')
 	end,
-	OnCancel = function()
+	OnCancel = function(self)
+        if self.epgplmNoReminder and self.epgplmNoReminder:GetChecked() then
+            LootMasterML.suppressTrackingPopupUntilReload = true
+        end
 	    LootMasterML:DisableTracking()
         LootMaster:Print('Відстеження луту для цього рейду вимкнено')
 	end,
-	OnShow = function()
+	OnShow = function(self)
+        if not self.epgplmNoReminder then
+            local cb = CreateFrame("CheckButton", nil, self, "UICheckButtonTemplate")
+            cb:SetPoint("BOTTOMLEFT", self.button1, "TOPLEFT", -2, 8)
+            cb.text = cb:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+            cb.text:SetPoint("LEFT", cb, "RIGHT", -2, 1)
+            cb.text:SetText("Не нагадувати до релогу")
+            cb:SetHitRectInsets(0, -cb.text:GetStringWidth() - 6, 0, 0)
+            self.epgplmNoReminder = cb
+        end
+        self.epgplmNoReminder:SetChecked(false)
+        self.epgplmNoReminder:Show()
 	end,
-	OnHide = function()
+	OnHide = function(self)
+        if self.epgplmNoReminder then
+            self.epgplmNoReminder:Hide()
+        end
 	end,
 	timeout = 0,
 	hideOnEscape = 0,
@@ -135,10 +153,12 @@ function LootMasterML:OnEnable()
 end
 
 function LootMasterML:EnableTracking()
+    self.trackingDisabledByUser = false;
     self.trackingEnabled = true;
 end
 
 function LootMasterML:DisableTracking()
+    self.trackingDisabledByUser = true;
     self.trackingEnabled = false;
 end
 
@@ -1609,6 +1629,8 @@ function LootMasterML:OnMasterLooterChange(masterlooter)
     elseif LootMaster.db.profile.use_epgplootmaster == 'disabled' then
         -- Disabled from the config panel
         LootMaster:Print('Ви майстер здобичі, відстеження вимкнено вручну (налаштування: /lm config)');
+        self:DisableTracking();
+    elseif self.suppressTrackingPopupUntilReload then
         self:DisableTracking();
     else
         StaticPopup_Show("EPGPLOOTMASTER_ASK_TRACKING")

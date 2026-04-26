@@ -215,20 +215,40 @@ StaticPopupDialogs["EPGP_BOSS_ATTEMPT"] = {
 }
 
 StaticPopupDialogs["EPGP_LOOTMASTER_ASK_TRACKING"] = {
-  text = "Ви майстер здобичі. Використати amdir EPGP LootMaster для розподілу луту?\r\n\r\n(Запит з'явиться знову. Поведінку можна змінити в налаштуваннях)",
+  text = "Ви майстер здобичі. Використати amdir EPGP LootMaster для розподілу луту?\r\n\r\n(Запит з'явиться знову. Поведінку можна змінити в налаштуваннях)\r\n\r\n ",
   button1 = YES,
   button2 = NO,
   OnAccept = function()
-    EPGP:GetModule("lootmaster"):EnableTracking()
+    local lootmaster = EPGP:GetModule("lootmaster")
+    lootmaster.suppressTrackingPopupUntilReload = false
+    lootmaster:EnableTracking()
     EPGP:Print('Відстеження луту для цього рейду увімкнено')
   end,
-  OnCancel = function()
-    EPGP:GetModule("lootmaster"):DisableTracking()
+  OnCancel = function(self)
+    local lootmaster = EPGP:GetModule("lootmaster")
+    if self.epgplmNoReminder and self.epgplmNoReminder:GetChecked() then
+      lootmaster.suppressTrackingPopupUntilReload = true
+    end
+    lootmaster:DisableTracking()
     EPGP:Print('Відстеження луту для цього рейду вимкнено')
   end,
-  OnShow = function()
+  OnShow = function(self)
+    if not self.epgplmNoReminder then
+      local cb = CreateFrame("CheckButton", nil, self, "UICheckButtonTemplate")
+      cb:SetPoint("BOTTOMLEFT", self.button1, "TOPLEFT", -2, 8)
+      cb.text = cb:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+      cb.text:SetPoint("LEFT", cb, "RIGHT", -2, 1)
+      cb.text:SetText("Не нагадувати до релогу")
+      cb:SetHitRectInsets(0, -cb.text:GetStringWidth() - 6, 0, 0)
+      self.epgplmNoReminder = cb
+    end
+    self.epgplmNoReminder:SetChecked(false)
+    self.epgplmNoReminder:Show()
   end,
-  OnHide = function()
+  OnHide = function(self)
+    if self.epgplmNoReminder then
+      self.epgplmNoReminder:Hide()
+    end
   end,
   timeout = 0,
   hideOnEscape = 0,

@@ -167,12 +167,14 @@ end
 --- Enable master loot tracking by just setting our boolean,
 --  we could also register the OPEN_MASTER_LOOT_LIST event here.
 function mod:EnableTracking()
+  self.trackingDisabledByUser = false
   self.trackingEnabled = true
 end
 
 --- Disable master loot tracking by just setting our boolean,
 --  we could also unregister the OPEN_MASTER_LOOT_LIST event here.
 function mod:DisableTracking()
+  self.trackingDisabledByUser = true
   self.trackingEnabled = false
 end
 
@@ -742,6 +744,8 @@ function mod:OnLootMasterChange(event, newLootMaster)
   elseif db.use_lootmaster == 'disabled' then
     -- Disabled from the config panel
     EPGP:Print('Ви майстер здобичі, відстеження вимкнено вручну (це можна змінити в налаштуваннях).')
+    self:DisableTracking()
+  elseif self.suppressTrackingPopupUntilReload then
     self:DisableTracking()
   else
     StaticPopup_Show("EPGP_LOOTMASTER_ASK_TRACKING")

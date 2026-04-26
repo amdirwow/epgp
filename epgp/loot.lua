@@ -27,6 +27,21 @@ local ignored_items = {
 
 local in_combat = false
 
+local function IsLootMasterOptedOut()
+  if LootMasterML and LootMasterML.trackingDisabledByUser then
+    return true
+  end
+
+  if EPGP.GetModule then
+    local ok, lootmaster = pcall(EPGP.GetModule, EPGP, "lootmaster", true)
+    if ok and lootmaster and lootmaster.trackingDisabledByUser then
+      return true
+    end
+  end
+
+  return false
+end
+
 local function IsLootMasterHandled(player, itemLink)
   if not itemLink then return false end
 
@@ -85,6 +100,7 @@ end
 local function LootReceived(event_name, player, itemLink, quantity)
   if IsRLorML() and CanEditOfficerNote() then
     if not itemLink then return end
+    if IsLootMasterOptedOut() then return end
     if IsLootMasterHandled(player, itemLink) then return end
 
     local itemID = tonumber(itemLink:match("item:(%d+)") or 0)
