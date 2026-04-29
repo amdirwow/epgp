@@ -14,6 +14,7 @@ local ignored_items = {
   [45624] = true, -- Emblem of Conquest
   [47241] = true, -- Emblem of Triumph
   [49426] = true, -- Emblem of Frost
+  [45229] = true, -- Емблема древніх
   [30311] = true, -- Warp Slicer
   [30312] = true, -- Infinity Blade
   [30313] = true, -- Staff of Disintegration
@@ -74,6 +75,11 @@ local function IsRLorML()
   return false
 end
 
+local function IsMasterLoot()
+  local loot_method = GetLootMethod()
+  return loot_method == "master"
+end
+
 local function ShowPopup(player, item, quantity)
   while in_combat or StaticPopup_Visible("EPGP_CONFIRM_GP_CREDIT") do
     Coroutine:Sleep(0.1)
@@ -99,6 +105,7 @@ end
 
 local function LootReceived(event_name, player, itemLink, quantity)
   if IsRLorML() and CanEditOfficerNote() then
+    if not IsMasterLoot() then return end
     if not itemLink then return end
     if IsLootMasterOptedOut() then return end
     if IsLootMasterHandled(player, itemLink) then return end
