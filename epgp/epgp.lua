@@ -183,6 +183,12 @@ local standings = {}
 local selected = {}
 selected._count = 0  -- This is safe since _ is not allowed in names
 
+-- Amdir: server-side automatic EPGP decay updates officer notes outside this addon.
+-- The addon has its own ep_data/gp_data/standings cache, so we must rebuild it
+-- directly from the live guild roster instead of trusting LibGuildStorage snapshots.
+local AMDIR_AUTO_DECAY_DONE_MSG = "Авто зріз ЕПГП виконано"
+local amdir_force_live_rebuild = false
+
 local function DecodeNote(note)
   if note then
     if note == "" then
@@ -541,6 +547,88 @@ local function BootstrapFromGuildStorage()
       end
     end
   end
+end
+
+-- Amdir: force a full rebuild from the live client guild roster.
+-- This intentionally does NOT use GS:GetNote()/GS:Snapshot(), because those can stay
+-- stale until /reload or relog after server-side officer-note edits.
+local function BootstrapFromLiveGuildRoster(reason)
+  if not IsInGuild() then
+    return false
+  end
+
+  local num_members = GetNumGuildMembers(true) or 0
+  if num_members == 0 then
+    GuildRoster()
+    return false
+  end
+
+  local live_notes = {}
+  local live_order = {}
+
+  for i = 1, num_members do
+    local name, _, _, _, _, _, public_note, officer_note = GetGuildRosterInfo(i)
+    if name then
+      local note = officer_note
+      if note == nil or note == "" then
+        note = public_note
+      end
+      note = note or ""
+      live_notes[name] = note
+      table.insert(live_order, name)
+    end
+  end
+
+  if #live_order == 0 then
+    return false
+  end
+
+  -- Prefer the live Guild Info text too, because GS guild_info may also be stale.
+  local live_guild_info = GetGuildInfoText() or ""
+  if live_guild_info == "" then
+    live_guild_info = GetBestGuildInfo()
+  end
+  ParseGuildInfo(nil, live_guild_info)
+
+  wipe(ep_data)
+  wipe(gp_data)
+  wipe(main_data)
+  wipe(alt_data)
+  wipe(ignored)
+  wipe(standings)
+
+  -- First pass: parse real EPGP notes for mains.
+  for _, name in ipairs(live_order) do
+    local ep, gp = DecodeNote(live_notes[name])
+    if ep then
+      ep_data[name] = ep
+      gp_data[name] = gp
+    end
+  end
+
+  -- Second pass: parse alts whose note points to a valid main name.
+  -- A note that is just a main nickname is normal and must not be treated as bad EPGP.
+  for _, name in ipairs(live_order) do
+    local note = live_notes[name]
+    local ep = DecodeNote(note)
+    if not ep and note and note ~= "" then
+      local main_note = live_notes[note]
+      local main_ep = DecodeNote(main_note)
+      if main_ep then
+        main_data[name] = note
+        if not alt_data[note] then
+          alt_data[note] = {}
+        end
+        table.insert(alt_data[note], name)
+      else
+        ignored[name] = note
+      end
+    end
+  end
+
+  DestroyStandings()
+  Debug("Amdir live EPGP rebuild complete: %s", tostring(reason or "manual"))
+  return true
 end
 
 local function HandleGuildStorageStateChanged()
@@ -1152,7 +1240,41 @@ function EPGP:GUILD_ROSTER_UPDATE()
           EPGP:CancelRecurringEP()
         end
       end
+
+      if amdir_force_live_rebuild then
+        amdir_force_live_rebuild = false
+        BootstrapFromLiveGuildRoster("GUILD_ROSTER_UPDATE")
+      end
     end
+  end
+end
+
+function EPGP:CHAT_MSG_SYSTEM(event, msg)
+  -- AceEvent normally passes event name as the first argument and message as the second.
+  -- Keep a fallback for direct/manual calls where the first argument is already the text.
+  if msg == nil and type(event) == "string" and event ~= "CHAT_MSG_SYSTEM" then
+    msg = event
+  end
+
+  if type(msg) ~= "string" then
+    return
+  end
+
+  -- In case another addon/color code wraps the text.
+  local plain = msg:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+  if plain:find(AMDIR_AUTO_DECAY_DONE_MSG, 1, true) then
+    amdir_force_live_rebuild = true
+    GuildRoster()
+    BootstrapFromLiveGuildRoster("auto-decay-message")
+  end
+end
+
+function EPGP:AmdirForceRefresh()
+  GuildRoster()
+  if BootstrapFromLiveGuildRoster("slash-command") then
+    self:Print("EPGP оновлено з поточного guild roster.")
+  else
+    self:Print("Не вдалося оновити EPGP: guild roster ще порожній або недоступний. Спробуйте /epgprefresh ще раз через кілька секунд.")
   end
 end
 
@@ -1166,6 +1288,8 @@ function EPGP:OnEnable()
 
   self:RegisterEvent("RAID_ROSTER_UPDATE")
   self:RegisterEvent("GUILD_ROSTER_UPDATE")
+  self:RegisterEvent("CHAT_MSG_SYSTEM")
+  self:RegisterChatCommand("epgprefresh", "AmdirForceRefresh")
 
   BootstrapFromGuildStorage()
   GuildRoster()
